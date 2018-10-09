@@ -32,3 +32,16 @@ In the metadata above, the `label` tags this service as part of the app's fronte
 You would choose `type: LoadBalancer` if your k8s cluster is on a major cloud platform (AWS/Azure/GCP) which can create a load balancer via API calls. This allows Kubernetes to provision one on your behalf with a public IP address, without you specifically knowing how to manipulate the cloud providers load balancer API.
 
 The `selector:` section will proxy traffic to pods with labels matching the `app:` name. In an example case, with the above configuration, if an end user hits the cluster IP, and consequently hits this service/load balancer over port 443, it will have its traffic routed/proxied to any pod behind the service which has a container exposing a `containerPort: 443` and a label matching `app:`. This containerPort definition and the label live in the deployment object YAML when creating a k8s deployment.
+
+## Node networking requirements
+
+* All nodes can communicate with each other
+* All pods can communicate with each other without NAT (i.e. a large, flat network of individual IPs)
+* The Node network uses HTTPS (443)
+* Each node is allocated a subnet of IP addresses for pods on that node to use
+
+## Pod networking requirements
+
+* The 'Pod' network uses the CNI (Container Network Interface) plugin, which may be implemented by third parties
+* All pods must have a resolvable IP address on the Pod network
+* The entire pod network is flat
