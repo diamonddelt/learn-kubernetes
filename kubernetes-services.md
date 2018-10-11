@@ -30,3 +30,20 @@ The port range can only be between 30000 - 32767.
 ### LoadBalancer
 
 This integrates with a public cloud platform.
+
+## The Service Network
+
+All newly created services are given a long-lived IP address, which is on a different class of network than the pods it load balances traffic for. It sits on a third network segment called the `service network`. For reference, here are the following three networks in Kubernetes and their associated class IP ranges and CIDR blocks:
+
+```yaml
+Pod network:
+  - 10.0.0.0/16
+Node network:
+  - 192.168.0.0/16
+Service network:
+  - 172.11.11.0/24
+```
+
+The service network is not actually routable from any pod. Traffic reaches it through a daemon set running on all nodes called the `kube-proxy`. There is always `one kube-proxy on every k8s node`. Essentially, this works by creating a set of IP lookup table rules on each node, so that when a pod in a node tries to resolve another pod, the lookup table proxies the traffic through the service, because only this lookup table (controlled via kube-proxy) knows what the services IP address is on the `service network`.
+
+Since Kubernetes 1.2, the default kube-proxy runs in `IPTABLES mode`. However this wasn't really designed for scaling for load balancing, so now the default mode is `IPVS mode`, which uses the Linux kernel IP virtual server. It supports more routing algorithms besides round-robin too.
