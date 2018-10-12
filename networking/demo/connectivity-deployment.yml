@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: networking-test
+  labels:
+    app: net-test
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: net-test
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: net-test
+    spec:
+      containers:
+      - image: ubuntu:latest
+        name: alpine-m
+        command:
+          - /bin/bash
+          - "-c"
+          - "sleep 30m"
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always
