@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: diamonddelt-svc
+  labels:
+    app: diamonddelt
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    nodePort: 30001
+    protocol: TCP
+  selector:
+    app: diamonddelt
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: diamonddelt-deploy
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: diamonddelt
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: diamonddelt
+    spec:
+      containers:
+      - name: diamonddelt-pod
+        image: nigelpoulton/acg-web:0.1
+        ports:
+        - containerPort: 8080
