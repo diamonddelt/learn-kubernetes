@@ -8,6 +8,7 @@ Notes and demo files for learning Kubernetes
 * [Objects](./kubernetes-objects.md)
 * [Networking](./networking/kubernetes-networking.md)
 * [Services](./kubernetes-services.md)
+* [Storage](./kubernetes-storage.md)
 
 ## Author
 
