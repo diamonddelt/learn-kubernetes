@@ -7,9 +7,9 @@ The whole point of Kubernetes Volumes is keeping data separate from pods, since 
 * File and Block storage types have standards and pluggable backends with rich APIs
 * Kubernetes `leaves the storage specifics to the storage provider` - it just provides an interface for pods to consume it
 * In other words, your enterprise storage system (Array, SAN, LUNs, other network storage device, etc) plugs into Kubernetes. Kubernetes then allows you to interact with the storage system via it's own abstraction layer, called the `PV (Persistent Volume) Subsystem`
-    - The thing the enterprise storage system actually connects with is the `Container Storage Interface (CNI)`
-    - The CNI allows a storage provider to write their own plugins that work with Kubernetes
-    - As a practical example, assume you had a managed, enterprise-grade SAN from Dell. This would plug into Kubernetes via a CNI plugin, which is developed and maintained by Dell. Since Dell owns the storage device, they know best how to tell Kubernetes how to interact with their own hardware.
+    * The thing the enterprise storage system actually connects with is the `Container Storage Interface (CNI)`
+    * The CNI allows a storage provider to write their own plugins that work with Kubernetes
+    * As a practical example, assume you had a managed, enterprise-grade SAN from Dell. This would plug into Kubernetes via a CNI plugin, which is developed and maintained by Dell. Since Dell owns the storage device, they know best how to tell Kubernetes how to interact with their own hardware.
 
 ## Main Storage Kubernetes Primitives
 
@@ -53,3 +53,35 @@ This is the behavior that a pv does when a claim is released (i.e. the pod was d
 
 1. Delete (deletes the claim, and can optionally delete the actual storage resource it represents)
 2. Retain (keeps the volume, even if the pod(s) accessing it via pvc claims are all destroyed)
+
+## Dynamic Provisioning with Storage Classes
+
+StorageClasses allow `dynamic` provisioning of persistent volumes - allowing the creation of them to scale with the demand. Each `StorageClass` references a particular storage backend and CNI plugin.
+
+It does this by `creating persistent volumes on demand, when a persistent volume claim is registered in Kubernetes by a pod`. Therefore there is no need to actually tell Kubernetes to create a pv manually before a Pod uses it.
+
+A StorageClass is an API resource, like any other Kubernetes object. An example manifest is below
+
+```yaml
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: sc-fast
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+reclaimPolicy: Retain
+```
+
+The StorageClass stands in for a persistent volume manifest, and it has some `parameters` in it that `directly reference` the storage class medium itself. For example, it can specifically call `gp2` as a storage type when interfacing with the AWS EBS backend.
+
+The `parameters:` block contains the actual implementation detail for the backend data store.
+
+```yaml
+parameters:
+  type: io1
+  zones: eu-west-1a
+  iopsPerGB: "10"
+```
+
+As you can see above, this is specific to AWS. The `name:` value is important - this gets referenced from the Persistent Volume Claim
