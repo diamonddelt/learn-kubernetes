@@ -8,3 +8,8 @@ The pv-example.yml defines a persistent volume to be created on Google Cloud, in
 
 ## Persistent Volume Claim
 
+The pvc-example.yml is the corresponding persistent volume claim file which a pod can use to lay claim to the persistent volume declared above. You can see the matching spec details, including the `accessModes`, `storageClassName`, and `storage` values.
+
+## Pod Referencing a PVC
+
+The podpvcmount.yml file shows what a Pod manifest file would look like which actually implements the Persistent Volume Claim, which claims the Persistent Volume configured for a Google Cloud disk
