@@ -4,11 +4,11 @@ Notes and demo files for learning Kubernetes
 
 ## Index
 
-* [Overview](./kubernetes-overview.md)
-* [Objects](./kubernetes-objects.md)
+* [Overview](./overview/kubernetes-overview.md)
+* [Objects](./objects/kubernetes-objects.md)
 * [Networking](./networking/kubernetes-networking.md)
-* [Services](./kubernetes-services.md)
-* [Storage](./kubernetes-storage.md)
+* [Services](./services/kubernetes-services.md)
+* [Storage](./storage/kubernetes-storage.md)
 
 ## Author
 
