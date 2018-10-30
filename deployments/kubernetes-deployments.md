@@ -13,3 +13,7 @@ You could think of a deployment as a higher level `wrapper` for a pod, similar t
 * `labels` are the heart of the Kubernetes locator strategy; so every object must have a unique label. A deployment finds the pods to manage by the `matchLabels:` property in the yaml manifest. The deployment, once created, also adds its own labels to the pods it deployed, and this is tracked by the `template metadata label` in the yaml manifest.
 * The `template` section of a deployment manifest is responsible for what triggers an update in the deployment. If you change a value in that section, the deployment will update itself.
 * The other sections of the deployment manifest are used to specify information about what the deployment will do (i.e. it's strategy or labels) when the next update occurs
+
+## Summary
+
+A deployment is the day to day management object that the k8s operator will use to deploy pods and scale them with zero downtime. Deployments use `label selector` to target pods by their `label`.
