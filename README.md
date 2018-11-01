@@ -10,6 +10,7 @@ Notes and demo files for learning Kubernetes
 * [Services](./services/kubernetes-services.md)
 * [Storage](./storage/kubernetes-storage.md)
 * [Deployments](./deployments/kubernetes-deployments.md)
+* [Scaling](./scaling/kubernetes-scaling.md)
 
 ## Author
 
