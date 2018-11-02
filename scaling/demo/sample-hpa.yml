@@ -1,0 +1,17 @@
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: demo-autoscaling-app
+  namespace: demo-namespace
+  labels:
+    app: demo-app
+    tier: frontend
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: demo-deployment
+  minReplicas: 3
+  maxReplicas: 30
+  targetCPUUtilizationPercentage: 50
