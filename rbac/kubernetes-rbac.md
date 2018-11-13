@@ -18,9 +18,66 @@ Client makes request --> API server receives request --> authN --> authZ --> adm
 
 Is the client (user) making this request actually an authorized user?
 
+These are different ways in which the API can prove the client executing an API action is `who they say they are`.
+
+There are a few systems in place which support authentication:
+
+1. Bearer tokens
+2. Client certs
+3. Bootstrap tokens
+4. External systems
+
+However, there is `no concept of users or user accounts` in Kubernetes. Kubernetes relies on external systems to implement users/user groups, such as Active Directory, IAM providers, or other federation systems.
+
+The Kubernetes API expects a request to come with embedded authentication credentials in it, which it hands off to the 3rd party IAM solution. It expects the IAM solution to return a yes or no that the user is authenticated.
+
+There is a type of account that `IS` stored in Kubernetes, but it is called a `service account`, and these are only used by the Kubernetes `system` components to do common tasks that client users do not worry about (examples being polling the cluster, monitoring pods, scaling operations, etc)
+
 ## authZ (Authorization)
 
 Does this authorized user actually have permission to do this particular API action?
+
+In other words, `who` can perform what `actions` to which `resources`?
+
+RBAC operates on `deny by default`, so even if the user/client making the API request passes the _authentication_ stage, that user is `still not authorized` to do anything unless that is explicitly configured.
+
+The difference when you create a new cluster is, the first user is given a superuser level account by default. This is not suitable for production, so dealing with RBAC and user accounts is really only a production-cluster issue. These are configured with:
+
+- `Role` = this defines that verbs and actions can be done on various Kubernetes resources
+
+```yaml
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: demo-rbac-user
+  namespace: demo-namespace
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+```
+
+- `Role Bindings` = this links the role to the authenticated user, to enable that user to have authorization according to the `Role` document
+
+```yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: demo-rbac-binding
+  namespace: demo-namespace
+subjects:
+- kind: User
+  name: rrrasti@yahoo.com
+  apiGroup: ""
+roleRef:
+  kind: Role
+  name: demo-rbac-user
+  apiGroup: ""
+```
+
+You can also create `ClusterRole` and `ClusterRoleBinding`, which look identical to the yaml manifests for Roles and RoleBindings, only these also grant authorization to the cluster and it's actions. In other words, `they are not restricted to a namespace.`
+
+You can output the current yaml definitions of the current cluster role bindings with `$ kubectl get clusterrolebindings -o yaml` and grep through to find what you need
 
 ## Admission Control
 
