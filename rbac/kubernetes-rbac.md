@@ -6,6 +6,8 @@ The certificates to facilitate this HTTPS communication are taken care of when y
 
 RBAC has been enabled since Kubernetes 1.6 (GA since 1.8), and is `deny-by-default` security
 
+RBAC is an `additive` model, so it's intended to compliment your existing Kubernetes implementation, not define it
+
 ## Security Request Flow
 
 The following flow assumes the communication is taking place over the secure HTTPS port
@@ -83,6 +85,17 @@ You can output the current yaml definitions of the current cluster role bindings
 
 Mutations and validations are applied at this step, such as forcing all create actions to have a specific label, or ensuring that only certain images are created in pods, etc
 
+_This makes sure policies and standards are enforced._
+
+Webhooks should be the standard if you want to use your own custom policies for using an existing Kubernetes cluster. Admission control can connect seamlessly to an external admission controller via webhooks. If you do this, however, you must ensure that communication is secured, because there is sensitive data in transit there.
+
+There are two types of admission controllers:
+
+1. `Mutating` - these modify requests (such as adding labels)
+2. `Validating` - these ensure requests make sense or conform to standards (do they have this particular label?)
+
+In either case, all admission controllers `must allow the requests.`
+
 ## Schema Validation
 
 This is the last `gate` of security before an API request is actually performed.
@@ -94,3 +107,7 @@ Some clusters allow you to bypass the authN and authZ steps by logging into the 
 ```text
 Client makes request directly on master--> API server receives request --> admission control --> schema validation --> API action completed
 ```
+
+## Best Practices for Namespace
+
+You should consider creating a custom namespace in addition to the kube-system namespace and the `default` namespace. And place your user roles and rolebindings in that custom namespace.
