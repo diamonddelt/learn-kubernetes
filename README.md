@@ -12,6 +12,7 @@ Notes and demo files for learning Kubernetes
 * [Deployments](./deployments/kubernetes-deployments.md)
 * [Scaling](./scaling/kubernetes-scaling.md)
 * [RBAC and Admission Control](./rbac/kubernetes-rbac.md)
+* [Other Kubernetes Features](./other-features/kubernetes-features.md)
 
 ## Author
 
